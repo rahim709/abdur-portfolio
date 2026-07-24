@@ -1,0 +1,35 @@
+---
+title: Uber-Ride Platform
+image: /projects/uber-ride-platform.svg
+description: An object-oriented ride-sharing backend built with C++17 and CMake, featuring Strategy and Factory patterns for fare processing and a state machine for ride lifecycles.
+startDate: July 2026
+endDate: July 2026
+techStack:
+  - C++
+  - OOP
+  - Design Patterns
+  - CMake
+role: Backend Developer
+---
+
+# Introduction
+
+Uber-Ride Platform is a backend system for a ride-sharing application, built from scratch using C++17 and CMake. The project focuses on object-oriented design principles and design patterns to model real-world ride-sharing scenarios in a clean, extensible way.
+
+## Key Features
+
+- **Fare Processing**: Strategy and Factory patterns decouple runtime fare calculation for Surge and Pool pricing.
+- **Graph-Based Routing**: Graph Adjacency List models transit routes and supports mid-ride stop insertions with live fare recalculation.
+- **Ride Lifecycle Management**: A state machine tracks ride statuses from request to completion, including automated receipt generation and cancellation fees.
+- **Vehicle Generation**: Factory pattern generates different vehicle types dynamically.
+
+## Technical Insights
+
+- **Language**: C++17 for modern language features and performance.
+- **Build System**: CMake for cross-platform compilation.
+- **Design Patterns**: Strategy, Factory, and State patterns for maintainable architecture.
+- **Data Structures**: Graph Adjacency List for efficient route representation.
+
+## Source Code
+
+View the full implementation on GitHub: [rahim709/uberProject](https://github.com/rahim709/uberProject).

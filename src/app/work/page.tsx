@@ -1,0 +1,126 @@
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+import PageNotFound from "@/components/PageNotFound"
+import { homeIntroConfig, paginationConfig } from "@/data/content"
+import { getAllWorkItems } from "@/lib/mdx"
+import { filterWorkItems, paginateItems, sortWorkItems } from "@/lib/utils"
+import WorkClientUI from "./WorkClientUI"
+
+const WORK_PAGE_SIZE = paginationConfig.workItemsPerPage
+
+export async function generateMetadata(props: {
+  searchParams?: Promise<{ page?: string }>
+}): Promise<Metadata> {
+  const searchParams = await props.searchParams
+  const page = Number(searchParams?.page) || 1
+  const canonical = page > 1 ? `/work?page=${page}` : "/work"
+
+  return {
+    title: `Work | ${homeIntroConfig.name}`,
+    description: "Explore my professional work experience and career journey.",
+    alternates: { canonical },
+    openGraph: {
+      title: `Work | ${homeIntroConfig.name}`,
+      description: "Explore my professional work experience and career journey.",
+      type: "website",
+    },
+  }
+}
+
+export default async function WorkPage(props: {
+  searchParams?: Promise<{
+    page?: string
+    sort?: string
+    company?: string | string[]
+  }>
+}) {
+  // Get all work items from MDX files
+  const work = await getAllWorkItems()
+
+  // Destructure all query params at once
+  const searchParams = await props.searchParams
+
+  // Page param
+  const currentPage = Number(searchParams?.page) || 1
+  const { sort, company } = searchParams || {}
+
+  // Sort param (default: newest)
+  const allowedSorts = ["newest", "oldest"]
+  let sortOrder: "newest" | "oldest" = "newest"
+  let sortIsValid: boolean
+  if (sort && allowedSorts.includes(sort as string)) {
+    sortOrder = sort as "newest" | "oldest"
+    sortIsValid = true
+  } else {
+    sortOrder = "newest"
+    sortIsValid = false
+  }
+
+  // If sort is invalid, rewrite the URL
+  if (sort && !sortIsValid) {
+    const params = new URLSearchParams()
+    if (searchParams?.page) params.set("page", String(currentPage))
+    if (company) {
+      if (Array.isArray(company)) {
+        params.set("company", company.join(","))
+      } else {
+        params.set("company", company)
+      }
+    }
+    params.set("sort", sortOrder)
+    redirect(`/work${params.toString() ? "?" + params.toString() : ""}`)
+  }
+
+  // Company param (handle string or string[])
+  let selectedCompanies: string[] = []
+  if (company) {
+    if (Array.isArray(company)) {
+      selectedCompanies = company.flatMap(c => c.split(","))
+    } else {
+      selectedCompanies = company.split(",")
+    }
+  }
+
+  // Unique companies for filter dropdown
+  const companyCounts: Record<string, number> = {}
+  work.forEach(workItem => {
+    companyCounts[workItem.company] = (companyCounts[workItem.company] || 0) + 1
+  })
+  const uniqueCompanies = Object.entries(companyCounts)
+    .map(([company, count]) => ({ company, count }))
+    .sort((a, b) => a.company.localeCompare(b.company))
+
+  // Filter and sort work items
+  const filteredWorkItems = sortWorkItems(filterWorkItems(work, selectedCompanies), sortOrder)
+
+  const { items: paginatedWorkItems, totalPages } = paginateItems(
+    filteredWorkItems,
+    currentPage,
+    WORK_PAGE_SIZE
+  )
+
+  // If page is out of bounds, show not-found
+  if (currentPage < 1 || (totalPages > 0 && currentPage > totalPages)) {
+    return (
+      <PageNotFound
+        heading="Work page not found"
+        description="The page you requested does not exist. Please return to the first page of work experience."
+        backHref="/work"
+        backLabel="Back to /work"
+      />
+    )
+  }
+
+  return (
+    <WorkClientUI
+      uniqueCompanies={uniqueCompanies}
+      selectedCompanies={selectedCompanies}
+      sortOrder={sortOrder}
+      filteredWorkItems={filteredWorkItems}
+      paginatedWorkItems={paginatedWorkItems}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      baseUrl="/work"
+    />
+  )
+}

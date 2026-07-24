@@ -1,0 +1,55 @@
+---
+title: VertexCode
+image: /projects/vertexcode.svg
+description: A LeetCode-like competitive coding platform with practice problems, multi-language code execution, leaderboards, submission history, and Stripe-based Pro subscriptions for reference solutions.
+startDate: 2025-12
+endDate: 2025-12
+techStack:
+  - React
+  - Vite
+  - React Router
+  - Redux Toolkit
+  - TanStack Query
+  - Tailwind CSS
+  - DaisyUI
+  - Monaco Editor
+  - Express.js
+  - MongoDB
+  - Redis
+  - Supabase
+  - Stripe
+  - Nodemailer
+  - Judge0
+role: Full-Stack Developer
+---
+
+# Introduction
+
+VertexCode is a full-stack competitive coding platform inspired by LeetCode. Users can practice problems, write and run code in multiple languages, submit solutions, track their progress, and compete on a global leaderboard. It also offers Pro subscriptions through Stripe, unlocking reference solutions and editorial content.
+
+## Key Features
+
+- **Authentication**: Signup, login, OTP email verification, and password reset.
+- **JWT Auth**: Token-based protected routes with automatic token refresh.
+- **Profile Management**: Avatar upload, bio, and progress tracking.
+- **Problem Discovery**: Difficulty filtering, search, and pagination.
+- **Monaco Editor**: Integrated code editor with multi-language support.
+- **Run & Submit**: Execute code against test cases and submit solutions.
+- **Submission History**: Track recently solved problems and past submissions.
+- **Leaderboard**: Global rankings with podium cards and avatars.
+- **Pro Subscriptions**: Monthly and yearly plans via Stripe Checkout.
+- **Admin Dashboard**: Create, update, and delete coding problems.
+
+## Technical Insights
+
+- **Frontend**: React 19 with Vite 7, React Router 7, Redux Toolkit + Redux Persist, TanStack Query, Tailwind CSS 4, DaisyUI 5, and Monaco Editor.
+- **Forms & Validation**: React Hook Form with Zod for client-side validation.
+- **Backend**: Express.js 5 with MongoDB and Mongoose for data persistence.
+- **Caching & Storage**: Redis for OTP and password reset caching; Supabase for avatar storage.
+- **Payments**: Stripe Checkout and webhooks for Pro subscriptions.
+- **Code Execution**: Judge0 via RapidAPI for running code in multiple languages.
+- **Email**: Nodemailer over Gmail SMTP for verification and reset emails.
+
+## Live Demo
+
+Try it out at [app-vertex-code.vercel.app](https://app-vertex-code.vercel.app/).
