@@ -76,7 +76,10 @@ export default async function ProjectPage(props: { params: pageParams }) {
   })
 
   const hasDates = frontmatter.startDate && frontmatter.endDate
-  const duration = hasDates ? formatDuration(frontmatter.startDate, frontmatter.endDate) : ""
+  const duration =
+    frontmatter.startDate && frontmatter.endDate
+      ? formatDuration(frontmatter.startDate, frontmatter.endDate)
+      : ""
 
   // Get project images
   const projectImages: { src: string; alt: string }[] = []

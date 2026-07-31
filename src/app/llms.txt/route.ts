@@ -9,7 +9,8 @@ export async function GET() {
 
   const projectsSection = projects
     .map(p => {
-      const period = formatDateRange(p.startDate, p.endDate)
+      const period =
+        p.startDate && p.endDate ? formatDateRange(p.startDate, p.endDate) : "Ongoing"
       const tech = p.techStack.join(", ")
       return `- [${p.title}](${base}/projects/${p.slug}) (${period}, ${tech}): ${p.description}`
     })
