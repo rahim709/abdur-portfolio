@@ -75,8 +75,8 @@ describe("getInitials", () => {
 })
 
 describe("formatDateRange", () => {
-  it("should join start and end with an en dash", () => {
-    expect(formatDateRange("Mar 2021", "Jun 2023")).toBe("Mar 2021 – Jun 2023")
+  it("should join start and end with a hyphen", () => {
+    expect(formatDateRange("Mar 2021", "Jun 2023")).toBe("Mar 2021 - Jun 2023")
   })
 
   it("should collapse to a single date when start month and end month are the same", () => {
@@ -87,9 +87,9 @@ describe("formatDateRange", () => {
     expect(formatDateRange("Present", "Present")).toBe("Present")
   })
 
-  it("should accept ISO year-month and slash-separated dates", () => {
-    expect(formatDateRange("2021-03", "2023-06")).toBe("2021-03 – 2023-06")
-    expect(formatDateRange("2021/03", "2023/06")).toBe("2021/03 – 2023/06")
+  it("should format ISO year-month and slash-separated dates", () => {
+    expect(formatDateRange("2021-03", "2023-06")).toBe("Mar 2021 - Jun 2023")
+    expect(formatDateRange("2021/03", "2023/06")).toBe("Mar 2021 - Jun 2023")
   })
 
   it("should throw when the start date is not a recognizable date", () => {
@@ -119,15 +119,15 @@ describe("formatDateRange", () => {
 
 describe("formatDuration", () => {
   it("should format duration with Present as end date", () => {
-    expect(formatDuration("2020-01", "Present")).toBe("Jan 2020 – Present")
+    expect(formatDuration("2020-01", "Present")).toBe("Jan 2020 - Present")
   })
 
   it("should format duration within same year", () => {
-    expect(formatDuration("2020-01", "2020-06")).toBe("Jan – Jun 2020")
+    expect(formatDuration("2020-01", "2020-06")).toBe("Jan - Jun 2020")
   })
 
   it("should format duration across different years", () => {
-    expect(formatDuration("2020-01", "2021-06")).toBe("Jan 2020 – Jun 2021")
+    expect(formatDuration("2020-01", "2021-06")).toBe("Jan 2020 - Jun 2021")
   })
 
   it("should format all 12 months correctly", () => {
@@ -149,12 +149,12 @@ describe("formatDuration", () => {
     months.forEach((month, index) => {
       const monthNum = (index + 1).toString().padStart(2, "0")
       const result = formatDuration(`2020-${monthNum}`, "Present")
-      expect(result).toBe(`${month} 2020 – Present`)
+      expect(result).toBe(`${month} 2020 - Present`)
     })
   })
 
   it("should handle single digit months", () => {
-    expect(formatDuration("2020-1", "2020-12")).toBe("Jan – Dec 2020")
+    expect(formatDuration("2020-1", "2020-12")).toBe("Jan - Dec 2020")
   })
 
   it("should collapse to a single date when start equals end", () => {
@@ -163,7 +163,15 @@ describe("formatDuration", () => {
 
   it("does not validate ordering: a reversed range is formatted as given", () => {
     // Unlike formatDateRange, formatDuration performs no chronological validation.
-    expect(formatDuration("2021-06", "2020-01")).toBe("Jun 2021 – Jan 2020")
+    expect(formatDuration("2021-06", "2020-01")).toBe("Jun 2021 - Jan 2020")
+  })
+
+  it("should format day-level dates within the same month", () => {
+    expect(formatDuration("2026-07-15", "2026-07-30")).toBe("15 Jul - 30 Jul 2026")
+  })
+
+  it("should format day-level dates across different months", () => {
+    expect(formatDuration("2025-11-01", "2025-12-31")).toBe("1 Nov - 31 Dec 2025")
   })
 })
 

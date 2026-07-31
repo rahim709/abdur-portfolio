@@ -94,6 +94,7 @@ export async function getAllProjects(): Promise<ProjectProps[]> {
     techStack: fm.techStack,
     teamSize: fm.teamSize,
     role: fm.role,
+    order: fm.order,
     githubUrl: fm.githubUrl,
     paperUrl: fm.paperUrl,
   }))

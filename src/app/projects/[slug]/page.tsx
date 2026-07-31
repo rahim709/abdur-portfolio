@@ -75,7 +75,8 @@ export default async function ProjectPage(props: { params: pageParams }) {
     },
   })
 
-  const duration = formatDuration(frontmatter.startDate, frontmatter.endDate)
+  const hasDates = frontmatter.startDate && frontmatter.endDate
+  const duration = hasDates ? formatDuration(frontmatter.startDate, frontmatter.endDate) : ""
 
   // Get project images
   const projectImages: { src: string; alt: string }[] = []
@@ -115,7 +116,11 @@ export default async function ProjectPage(props: { params: pageParams }) {
     <AnimatedArticle>
       <PageHeaderSync
         title={frontmatter.title}
-        subtitle={`${homeIntroConfig.name}'s Projects · ${duration}`}
+        subtitle={
+          duration
+            ? `${homeIntroConfig.name}'s Projects · ${duration}`
+            : `${homeIntroConfig.name}'s Projects`
+        }
       />
       <script
         type="application/ld+json"
@@ -145,12 +150,14 @@ export default async function ProjectPage(props: { params: pageParams }) {
             </span>
           </div>
         )}
-        <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm">
-          <FaClock className="w-4 h-4" />
-          <span>
-            <strong>Duration:</strong> {duration}
-          </span>
-        </div>
+        {duration && (
+          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm">
+            <FaClock className="w-4 h-4" />
+            <span>
+              <strong>Duration:</strong> {duration}
+            </span>
+          </div>
+        )}
         {frontmatter.githubUrl && (
           <Link
             href={frontmatter.githubUrl}

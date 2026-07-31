@@ -17,7 +17,10 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const title = project?.title ?? "Project"
   const description = project?.description ?? ""
   const techStack = project?.techStack?.slice(0, 6) ?? []
-  const duration = project ? `${project.startDate} – ${project.endDate}` : ""
+  const duration =
+    project && project.startDate && project.endDate
+      ? `${project.startDate} – ${project.endDate}`
+      : ""
 
   return new ImageResponse(
     <div

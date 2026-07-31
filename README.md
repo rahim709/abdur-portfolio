@@ -2,7 +2,7 @@
 
 A personal developer portfolio built with **Next.js 16**, **TypeScript**, **Tailwind CSS**, and **MDX**.
 
-Live site: https://abdurrahim.vercel.app
+Live site: www.abdurdev.blog/
 
 ## About Me
 
@@ -24,17 +24,18 @@ I am **Abdur Rahim**, a 4th-year Computer Science and Engineering student at **I
 
 ## Projects
 
-1. **Pod Gear** — E-sports coaching & strategy platform
-   - Live: https://pod-gear.vercel.app/
-   - Stack: Next.js, Tailwind CSS, TypeScript, Express.js, MongoDB, Redis
-
-2. **VertexCode** — Competitive coding platform
+1. **VertexCode** — Competitive coding platform
    - Live: https://app-vertex-code.vercel.app/
    - Stack: React.js, Express.js, MongoDB, Redis, JavaScript
 
-3. **Uber-Ride Platform** — Object-oriented ride-sharing backend
+2. **Uber-Ride Platform** — Object-oriented ride-sharing backend
    - Code: https://github.com/rahim709/uberProject
    - Stack: C++, OOP, Design Patterns, CMake
+
+3. **Abdur Rahim Portfolio** — Personal developer portfolio
+   - Live: https://www.abdurdev.blog/
+   - Code: https://github.com/rahim709/abdur-portfolio
+   - Stack: Next.js, TypeScript, Tailwind CSS, MDX
 
 ## Resume
 

@@ -67,27 +67,37 @@ describe("ProjectFrontmatterSchema", () => {
   it("parses all optional fields", () => {
     const withOptionals = {
       ...valid,
+      startDate: "2023-01",
+      endDate: "2023-12",
       teamSize: 3,
       role: "Lead Developer",
+      order: 1,
       githubUrl: "https://github.com/x/y",
       paperUrl: "https://arxiv.org/abs/1234",
     }
     expect(ProjectFrontmatterSchema.parse(withOptionals)).toEqual(withOptionals)
   })
 
-  const requiredFields = [
-    "title",
-    "image",
-    "description",
-    "startDate",
-    "endDate",
-    "techStack",
-  ] as const
+  const requiredFields = ["title", "image", "description", "techStack"] as const
   requiredFields.forEach(field => {
     it(`rejects missing ${field}`, () => {
       const { [field]: _f, ...rest } = valid as Record<string, unknown>
       expect(ProjectFrontmatterSchema.safeParse(rest).success).toBe(false)
     })
+  })
+
+  it("allows missing startDate and endDate", () => {
+    const { startDate: _s, endDate: _e, ...withoutDates } = valid as Record<string, unknown>
+    expect(ProjectFrontmatterSchema.safeParse(withoutDates).success).toBe(true)
+  })
+
+  it("allows missing order", () => {
+    const { order: _o, ...withoutOrder } = valid as Record<string, unknown>
+    expect(ProjectFrontmatterSchema.safeParse(withoutOrder).success).toBe(true)
+  })
+
+  it("rejects non-number order", () => {
+    expect(ProjectFrontmatterSchema.safeParse({ ...valid, order: "1" }).success).toBe(false)
   })
 
   it("rejects non-array techStack", () => {

@@ -40,7 +40,7 @@ describe("WorkItem", () => {
 
   it("renders the start and end dates", () => {
     render(<WorkItem {...defaultProps} />)
-    expect(screen.getByText(/Jan 2023 – Dec 2023/)).toBeDefined()
+    expect(screen.getByText(/Jan 2023 - Dec 2023/)).toBeDefined()
   })
 
   it("renders the work item description", () => {
@@ -78,7 +78,7 @@ describe("WorkItem", () => {
   it("renders duration between start and end dates", () => {
     const { container } = render(<WorkItem {...defaultProps} />)
     const datesContainer = container.querySelector(".flex.items-center.gap-2")
-    expect(datesContainer?.textContent).toMatch(/Jan 2023 – Dec 2023/)
+    expect(datesContainer?.textContent).toMatch(/Jan 2023 - Dec 2023/)
     expect(datesContainer?.textContent).toMatch(/·/)
   })
 })

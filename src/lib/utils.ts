@@ -26,8 +26,14 @@ function parseFlexibleDate(dateStr: string): Date {
     return new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
   }
 
-  // Format: "2020-01", "2020/01"
-  const dashMatch = dateStr.match(/^(\d{4})[-/](\d{2})$/)
+  // Format: "2020-01-15", "2020/1/15", "2020-01-5"
+  const dayMatch = dateStr.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/)
+  if (dayMatch) {
+    return new Date(parseInt(dayMatch[1]), parseInt(dayMatch[2]) - 1, parseInt(dayMatch[3]))
+  }
+
+  // Format: "2020-01", "2020/01", "2020-1"
+  const dashMatch = dateStr.match(/^(\d{4})[-/](\d{1,2})$/)
   if (dashMatch) {
     return new Date(parseInt(dashMatch[1]), parseInt(dashMatch[2]) - 1, 1)
   }
@@ -36,45 +42,125 @@ function parseFlexibleDate(dateStr: string): Date {
   return new Date(dateStr)
 }
 
+function isDayLevelDate(dateStr: string): boolean {
+  return /^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(dateStr)
+}
+
 export function formatDateRange(start: string, end: string): string {
+  const startIsPresent = start.toLowerCase() === PRESENT.toLowerCase()
+  const endIsPresent = end.toLowerCase() === PRESENT.toLowerCase()
+
+  if (startIsPresent && endIsPresent) {
+    return PRESENT
+  }
+
   const startDate = parseFlexibleDate(start)
   const endDate = parseFlexibleDate(end)
 
-  if (Number.isNaN(startDate.getTime())) {
+  if (!startIsPresent && Number.isNaN(startDate.getTime())) {
     throw new Error(`formatDateRange: invalid start date "${start}"`)
   }
-  if (Number.isNaN(endDate.getTime())) {
+  if (!endIsPresent && Number.isNaN(endDate.getTime())) {
     throw new Error(`formatDateRange: invalid end date "${end}"`)
   }
-  if (start !== end && startDate.getTime() > endDate.getTime()) {
+  if (!startIsPresent && !endIsPresent && startDate.getTime() > endDate.getTime()) {
     throw new Error(`formatDateRange: start date "${start}" is after end date "${end}"`)
   }
 
-  return start === end ? start : `${start} – ${end}`
+  const formatMonthYear = (date: Date) => {
+    return date.toLocaleDateString("en-US", { month: "short", year: "numeric" })
+  }
+
+  const startMonthYear = startIsPresent ? PRESENT : formatMonthYear(startDate)
+
+  if (endIsPresent) {
+    return `${startMonthYear} - ${PRESENT}`
+  }
+
+  const endMonthYear = formatMonthYear(endDate)
+  if (startMonthYear === endMonthYear) {
+    return startMonthYear
+  }
+
+  return `${startMonthYear} - ${endMonthYear}`
 }
 
 export function formatDuration(start: string, end: string): string {
-  const [startYear, startMonth] = start.split("-")
-  const [endYear, endMonth] = end === PRESENT ? ["", ""] : end.split("-")
+  const startIsPresent = start.toLowerCase() === PRESENT.toLowerCase()
+  const endIsPresent = end.toLowerCase() === PRESENT.toLowerCase()
 
-  const formatMonth = (month: string) => {
-    const date = new Date(2000, parseInt(month) - 1)
+  if (startIsPresent && endIsPresent) {
+    return PRESENT
+  }
+
+  const startDate = parseFlexibleDate(start)
+  const endDate = parseFlexibleDate(end)
+
+  if (!startIsPresent && Number.isNaN(startDate.getTime())) {
+    throw new Error(`formatDuration: invalid start date "${start}"`)
+  }
+  if (!endIsPresent && Number.isNaN(endDate.getTime())) {
+    throw new Error(`formatDuration: invalid end date "${end}"`)
+  }
+
+  const startDayLevel = !startIsPresent && isDayLevelDate(start)
+  const endDayLevel = !endIsPresent && isDayLevelDate(end)
+  const useDayLevel = startDayLevel || endDayLevel
+
+  const formatDayMonth = (date: Date) => {
+    return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+  }
+
+  const formatDayMonthYear = (date: Date) => {
+    return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+  }
+
+  const formatMonth = (date: Date) => {
     return date.toLocaleDateString("en-US", { month: "short" })
   }
 
-  if (end === PRESENT) {
-    return `${formatMonth(startMonth)} ${startYear} – ${PRESENT}`
+  const formatMonthYear = (date: Date) => {
+    return date.toLocaleDateString("en-US", { month: "short", year: "numeric" })
   }
 
-  if (start === end) {
-    return `${formatMonth(startMonth)} ${startYear}`
+  if (endIsPresent) {
+    if (useDayLevel) {
+      return `${formatDayMonthYear(startDate)} - ${PRESENT}`
+    }
+    return `${formatMonthYear(startDate)} - ${PRESENT}`
+  }
+
+  if (startIsPresent) {
+    if (useDayLevel) {
+      return `${PRESENT} - ${formatDayMonthYear(endDate)}`
+    }
+    return `${PRESENT} - ${formatMonthYear(endDate)}`
+  }
+
+  const startYear = startDate.getFullYear()
+  const endYear = endDate.getFullYear()
+  const startMonth = startDate.getMonth()
+  const endMonth = endDate.getMonth()
+
+  if (startYear === endYear && startMonth === endMonth) {
+    if (useDayLevel) {
+      return `${formatDayMonth(startDate)} - ${formatDayMonth(endDate)} ${startYear}`
+    }
+    return formatMonthYear(startDate)
   }
 
   if (startYear === endYear) {
-    return `${formatMonth(startMonth)} – ${formatMonth(endMonth)} ${startYear}`
+    if (useDayLevel) {
+      return `${formatDayMonth(startDate)} - ${formatDayMonth(endDate)} ${startYear}`
+    }
+    return `${formatMonth(startDate)} - ${formatMonth(endDate)} ${startYear}`
   }
 
-  return `${formatMonth(startMonth)} ${startYear} – ${formatMonth(endMonth)} ${endYear}`
+  if (useDayLevel) {
+    return `${formatDayMonthYear(startDate)} - ${formatDayMonthYear(endDate)}`
+  }
+
+  return `${formatMonthYear(startDate)} - ${formatMonthYear(endDate)}`
 }
 
 export function calculateDuration(start: string, end: string): string {
@@ -210,13 +296,42 @@ export function sortProjects(
   projects: ProjectProps[],
   sortOrder: "newest" | "oldest"
 ): ProjectProps[] {
-  return sortByPresentAwareDate(
-    projects,
-    sortOrder,
-    item => item.startDate,
-    item => item.endDate,
-    item => item.title
-  )
+  return [...projects].sort((a, b) => {
+    // Explicit order takes highest precedence
+    const aOrder = a.order ?? Number.MAX_SAFE_INTEGER
+    const bOrder = b.order ?? Number.MAX_SAFE_INTEGER
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder
+    }
+
+    // Both have the same explicit order — fall back to present-aware date sorting
+    const aEnd = a.endDate ?? ""
+    const bEnd = b.endDate ?? ""
+    const aStart = a.startDate ?? ""
+    const bStart = b.startDate ?? ""
+
+    if (sortOrder === "newest") {
+      const aIsPresent = aEnd.toLowerCase() === PRESENT.toLowerCase()
+      const bIsPresent = bEnd.toLowerCase() === PRESENT.toLowerCase()
+      if (aIsPresent && !bIsPresent) return -1
+      if (!aIsPresent && bIsPresent) return 1
+      if (aIsPresent && bIsPresent) return a.title.localeCompare(b.title)
+
+      const aEndTime = aEnd ? parseFlexibleDate(aEnd).getTime() : 0
+      const bEndTime = bEnd ? parseFlexibleDate(bEnd).getTime() : 0
+      if (!Number.isNaN(aEndTime) && !Number.isNaN(bEndTime) && aEndTime !== bEndTime) {
+        return bEndTime - aEndTime
+      }
+      return a.title.localeCompare(b.title)
+    }
+
+    const aStartTime = aStart ? parseFlexibleDate(aStart).getTime() : 0
+    const bStartTime = bStart ? parseFlexibleDate(bStart).getTime() : 0
+    if (!Number.isNaN(aStartTime) && !Number.isNaN(bStartTime) && aStartTime !== bStartTime) {
+      return aStartTime - bStartTime
+    }
+    return a.title.localeCompare(b.title)
+  })
 }
 
 export function paginateItems<T>(

@@ -5,11 +5,12 @@ export interface ProjectProps {
   title: string
   image: string
   description: string
-  startDate: string
-  endDate: string
+  startDate?: string
+  endDate?: string
   techStack: string[]
   teamSize?: number
   role?: string
+  order?: number
   githubUrl?: string
   paperUrl?: string
 }

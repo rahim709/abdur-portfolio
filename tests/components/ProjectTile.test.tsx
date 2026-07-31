@@ -43,7 +43,7 @@ describe("ProjectTile", () => {
 
   it("renders the date range when both dates are provided", () => {
     render(<ProjectTile {...defaultProps} />)
-    expect(screen.getByText(/Jan 2024 – Mar 2024/)).toBeDefined()
+    expect(screen.getByText(/Jan 2024 - Mar 2024/)).toBeDefined()
   })
 
   it("renders the tech stack badges", () => {
